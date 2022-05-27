@@ -1,9 +1,14 @@
 import { redirect, ActionFunction, json } from '@remix-run/node';
-import { Form, useActionData, useLoaderData, useTransition } from '@remix-run/react';
+import {
+  Form,
+  useActionData,
+  useLoaderData,
+  useTransition,
+} from '@remix-run/react';
 import { marked } from 'marked';
 import { LoaderFunction } from 'remix';
 import invariant from 'tiny-invariant';
-import { updatePost, getPost } from '~/models/post.server';
+import { deletePost, updatePost, getPost } from '~/models/post.server';
 
 type ActionData =
   | {
@@ -18,7 +23,13 @@ interface LoaderData {
   html: string;
 }
 
-export const action: ActionFunction = async ({ request }) => {
+export const action: ActionFunction = async ({ request, params }) => {
+  if (request.method === 'DELETE') {
+    await deletePost({
+      slug: params.slug ?? '',
+    });
+    return redirect('/posts/admin');
+  }
   const formData = await request.formData();
 
   const title = formData.get('title');
@@ -58,52 +69,74 @@ const inputClassName = `w-full rounded border border-gray-500 px-2 py-1 text-lg`
 export default function EditPost() {
   const errors = useActionData<ActionData>();
   const transition = useTransition();
-  const isCreating = Boolean(transition.submission);
+  const isSubmitting = Boolean(transition.submission);
   const { post, html } = useLoaderData<LoaderData>();
-  
+
   return (
-    <Form method="post">
-      <p>
-        <label>
-          Post Title:{' '}
-          <input type="text" name="title" className={inputClassName} defaultValue={post?.title} />
-          {errors?.title ? (
-            <em className="text-red-600">{errors.title}</em>
-          ) : null}
-        </label>
-      </p>
-      <p>
-        <label>
-          Post Slug:{' '}
-          <input type="text" name="slug" className={inputClassName} defaultValue={post?.slug} />
-          {errors?.slug ? (
-            <em className="text-red-600">{errors.slug}</em>
-          ) : null}
-        </label>
-      </p>
-      <p>
-        <label htmlFor="markdown">Markdown:</label>
-        <br />
-        <textarea
-          id="markdown"
-          rows={20}
-          name="markdown"
-          className={`${inputClassName} font-mono`}
-          defaultValue={post?.markdown}
-        />
-        {errors?.markdown ? (
-          <em className="text-red-600">{errors.markdown}</em>
-        ) : null}
-      </p>
-      <p className="text-right">
+    <>
+      <Form method="delete">
+        <input type="hidden" value={post?.slug ?? 'hello world'} />
         <button
           type="submit"
-          disabled={isCreating}
+          disabled={isSubmitting}
           className="rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400 disabled:bg-blue-300"
         >
-          {isCreating ? 'Updating...' : 'Update Post'}
+          {isSubmitting ? 'Deleting...' : 'Delete Post'}
         </button>
-      </p>
-    </Form>
+      </Form>
+      <Form method="post">
+        <p>
+          <label>
+            Post Title:{' '}
+            <input
+              type="text"
+              name="title"
+              className={inputClassName}
+              defaultValue={post?.title}
+            />
+            {errors?.title ? (
+              <em className="text-red-600">{errors.title}</em>
+            ) : null}
+          </label>
+        </p>
+        <p>
+          <label>
+            Post Slug:{' '}
+            <input
+              type="text"
+              name="slug"
+              className={inputClassName}
+              defaultValue={post?.slug}
+            />
+            {errors?.slug ? (
+              <em className="text-red-600">{errors.slug}</em>
+            ) : null}
+          </label>
+        </p>
+        <p>
+          <label htmlFor="markdown">Markdown:</label>
+          <br />
+          <textarea
+            id="markdown"
+            rows={20}
+            name="markdown"
+            className={`${inputClassName} font-mono`}
+            defaultValue={post?.markdown}
+          />
+          {errors?.markdown ? (
+            <em className="text-red-600">{errors.markdown}</em>
+          ) : null}
+        </p>
+        <p className="text-right">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400 disabled:bg-blue-300"
+          >
+            {isSubmitting ? 'Updating...' : 'Update Post'}
+          </button>
+        </p>
+      </Form>
+    </>
   );
 }

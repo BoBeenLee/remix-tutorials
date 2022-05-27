@@ -24,7 +24,17 @@ export async function updatePost(post: {
     markdown: string;
 }) {
     return prisma.post.update({
-        data: post, 
+        data: post,
+        where: {
+            slug: post.slug
+        }
+    });
+}
+
+export async function deletePost(post: {
+    slug: string;
+}) {
+    return prisma.post.delete({
         where: {
             slug: post.slug
         }
