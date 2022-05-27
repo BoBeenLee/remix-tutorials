@@ -20,9 +20,11 @@ export const loader: LoaderFunction = async () => {
 
 export default function Posts() {
   const { posts } = useLoaderData<LoaderData>();
-  console.log(posts);
   return (
     <main>
+      <Link to="admin" className="text-red-600 underline">
+        Admin
+      </Link>
       <h1>Posts</h1>
       <ul>
         {posts.map((post) => (
