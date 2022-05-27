@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@remix-tutorials/components": ["libs/components/src/index.ts"]
+      "@remix-tutorials/components": ["libs/components/src/index.ts"],
+      "@remix-tutorials/machines": ["libs/machines/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
