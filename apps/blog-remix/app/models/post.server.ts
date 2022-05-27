@@ -17,3 +17,16 @@ export async function createPost(post: {
 }) {
     return prisma.post.create({ data: post });
 }
+
+export async function updatePost(post: {
+    title: string;
+    slug: string;
+    markdown: string;
+}) {
+    return prisma.post.update({
+        data: post, 
+        where: {
+            slug: post.slug
+        }
+    });
+}
