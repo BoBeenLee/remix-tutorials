@@ -2,15 +2,15 @@ import { prisma } from "~/libs/prisma.server";
 
 export type { Post } from "~/generated";
 
-export async function getPosts() {
+export function getPosts() {
     return prisma.post.findMany();
 }
 
-export async function getPost(slug: string) {
+export function getPost(slug: string) {
     return prisma.post.findUnique({ where: { slug } });
 }
 
-export async function createPost(post: {
+export function createPost(post: {
     title: string;
     slug: string;
     markdown: string;
@@ -18,7 +18,7 @@ export async function createPost(post: {
     return prisma.post.create({ data: post });
 }
 
-export async function updatePost(post: {
+export function updatePost(post: {
     title: string;
     slug: string;
     markdown: string;
@@ -31,7 +31,7 @@ export async function updatePost(post: {
     });
 }
 
-export async function deletePost(post: {
+export function deletePost(post: {
     slug: string;
 }) {
     return prisma.post.delete({
