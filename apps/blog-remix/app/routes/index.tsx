@@ -1,12 +1,32 @@
-import { Link } from "remix";
-import { Components } from '@remix-tutorials/components';
+import type { LinksFunction } from '@remix-run/node';
+import { Link } from '@remix-run/react';
+
+import stylesUrl from '~/styles/index.css';
+
+export const links: LinksFunction = () => {
+  return [
+    {
+      rel: 'stylesheet',
+      href: stylesUrl,
+    },
+  ];
+};
 
 export default function Index() {
   return (
-    <div className="mx-auto mt-16 max-w-7xl text-center">
-      <Link to="/posts" className="text-xl text-blue-600 underline">
-        Blog Posts
-      </Link>
+    <div className="container">
+      <div className="content">
+        <h1>
+          Remix <span>Jokes!</span>
+        </h1>
+        <nav>
+          <ul>
+            <li>
+              <Link to="jokes">Read Jokes</Link>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </div>
   );
 }
