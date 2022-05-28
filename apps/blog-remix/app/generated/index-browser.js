@@ -84,8 +84,17 @@ exports.Prisma.PostScalarFieldEnum = makeEnum({
   updatedAt: 'updatedAt'
 });
 
+exports.Prisma.UserScalarFieldEnum = makeEnum({
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  username: 'username',
+  passwordHash: 'passwordHash'
+});
+
 exports.Prisma.JokeScalarFieldEnum = makeEnum({
   id: 'id',
+  jokesterId: 'jokesterId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   name: 'name',
@@ -105,6 +114,7 @@ exports.Prisma.QueryMode = makeEnum({
 
 exports.Prisma.ModelName = makeEnum({
   Post: 'Post',
+  User: 'User',
   Joke: 'Joke'
 });
 

@@ -84,6 +84,14 @@ function getPosts() {
 async function main() {
   console.log(`Start seeding ...`);
 
+  const kody = await prisma.user.create({
+    data: {
+      username: "kody",
+      // this is a hashed version of "twixrox"
+      passwordHash:
+        "$2b$10$K7L1OJ45/4Y2nIvhRVpCe.FSmhDdWoXehVzJptJ/op0lSsvqNu/1u",
+    },
+  });
   await Promise.all(getPosts().map(post => {
     return prisma.post.upsert({
       where: { slug: post.slug },
@@ -94,10 +102,14 @@ async function main() {
 
   await Promise.all(
     getJokes().map((joke) => {
+      const newJoke = {
+        jokesterId: kody.id,
+        ...joke,
+      }
       return prisma.joke.upsert({
         where: {
-          id: joke.id,
-        }, update: joke, create: joke
+          id: newJoke.id,
+        }, update: newJoke, create: newJoke
       });
     })
   );
