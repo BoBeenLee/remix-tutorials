@@ -1,4 +1,5 @@
 import { ActionFunction, json, redirect, useActionData } from 'remix';
+import { requireUserId } from "~/libs/session.server";
 import { createJoke } from '~/models/joke.server';
 
 function validateJokeContent(content: string) {
@@ -28,6 +29,7 @@ type ActionData = {
 const badRequest = (data: ActionData) => json(data, { status: 400 });
 
 export const action: ActionFunction = async ({ request }) => {
+  const userId = await requireUserId(request);
   const form = await request.formData();
   const name = form.get('name')?.toString?.();
   const content = form.get('content')?.toString?.();
@@ -42,7 +44,7 @@ export const action: ActionFunction = async ({ request }) => {
     name: validateJokeName(name),
     content: validateJokeContent(content),
   };
-  const fields = { name, content };
+  const fields = { userId, name, content };
   if (Object.values(fieldErrors).some(Boolean)) {
     return badRequest({ fieldErrors, fields });
   }

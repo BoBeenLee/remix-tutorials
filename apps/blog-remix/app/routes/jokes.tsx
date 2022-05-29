@@ -1,11 +1,14 @@
 import type { LinksFunction } from '@remix-run/node';
 import { Outlet, Link, useLoaderData } from '@remix-run/react';
 import { json, LoaderFunction } from 'remix';
+import { requireUser, requireUserId } from '~/libs/session.server';
 import { Joke, getJokes } from '~/models/joke.server';
+import { getUser, getUserById } from '~/models/user.server';
 
 import stylesUrl from '~/styles/jokes.css';
 
 type LoaderData = {
+  user: Awaited<ReturnType<typeof getUser>>;
   jokeListItems: Awaited<ReturnType<typeof getJokes>>;
 };
 
@@ -13,9 +16,11 @@ export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: stylesUrl }];
 };
 
-export const loader: LoaderFunction = async () => {
+export const loader: LoaderFunction = async ({ request }) => {
+  const user = await requireUser(request);
   const data: LoaderData = {
     jokeListItems: await getJokes(),
+    user,
   };
   return json<LoaderData>(data);
 };
@@ -33,6 +38,18 @@ export default function JokesRoute() {
               <span className="logo-medium">J🤪KES</span>
             </Link>
           </h1>
+          {data.user ? (
+            <div className="user-info">
+              <span>{`Hi ${data.user.username}`}</span>
+              <form action="/logout" method="post">
+                <button type="submit" className="button">
+                  Logout
+                </button>
+              </form>
+            </div>
+          ) : (
+            <Link to="/login">Login</Link>
+          )}
         </div>
       </header>
       <main className="jokes-main">
@@ -43,7 +60,10 @@ export default function JokesRoute() {
             <ul>
               {data.jokeListItems.map((joke) => (
                 <li key={joke.id}>
-                  <Link to={joke.id}>{"joke-"}{joke.name}</Link>
+                  <Link to={joke.id}>
+                    {'joke-'}
+                    {joke.name}
+                  </Link>
                 </li>
               ))}
             </ul>

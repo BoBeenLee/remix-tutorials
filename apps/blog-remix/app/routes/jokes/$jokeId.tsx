@@ -1,10 +1,10 @@
 import type { LoaderFunction } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { Form, Link, useLoaderData, useTransition } from '@remix-run/react';
-import { ActionFunction, redirect } from "remix";
+import { ActionFunction, redirect } from 'remix';
 
 import { deleteJoke, getJoke, Joke } from '~/models/joke.server';
-import { deletePost } from "~/models/post.server";
+import { deletePost } from '~/models/post.server';
 
 type LoaderData = { joke: Joke };
 
@@ -16,16 +16,17 @@ export const loader: LoaderFunction = async ({ params }) => {
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
-      await deleteJoke(params.jokeId ?? "");
-      return redirect('/jokes');
-  };
-  
+  if (request.method === 'DELETE') {
+    await deleteJoke(params.jokeId ?? '');
+    return redirect('/jokes');
+  }
+};
 
 export default function JokeRoute() {
   const data = useLoaderData<LoaderData>();
   const transition = useTransition();
   const isSubmitting = Boolean(transition.submission);
-  
+
   return (
     <div>
       <p>Here's your hilarious joke:</p>

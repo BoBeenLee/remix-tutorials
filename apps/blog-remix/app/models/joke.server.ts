@@ -15,8 +15,13 @@ export function getJoke(id: string) {
     return prisma.joke.findUnique({ where: { id } });
 }
 
-export function createJoke(request: { name: string, content: string }) {
-    return prisma.joke.create({ data: request });
+export function createJoke(request: { userId: string; name: string, content: string }) {
+    const { userId, name, content } = request;
+    return prisma.joke.create({ data: {
+        name,
+        content,
+        jokesterId: userId,
+    } });
 }
 
 export function deleteJoke(id: string) {
