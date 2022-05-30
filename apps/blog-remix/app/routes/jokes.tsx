@@ -26,7 +26,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function JokesRoute() {
   const data = useLoaderData<LoaderData>();
-  console.log(data);
   return (
     <div className="jokes-layout">
       <header className="jokes-header">
