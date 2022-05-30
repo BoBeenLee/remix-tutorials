@@ -57,6 +57,12 @@ export async function requireUserId(
     return userId;
 }
 
+export async function existUserSession(request: Request) {
+    const session = await getUserSession(request);
+    const userId = session.get("userId");
+    return Boolean(userId);
+}
+
 export async function requireUser(
     request: Request,
     redirectTo: string = new URL(request.url).pathname

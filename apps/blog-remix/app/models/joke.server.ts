@@ -1,4 +1,5 @@
 import { prisma } from "~/libs/prisma.server";
+import { User } from "./user.server";
 
 export type { Joke } from "~/generated";
 
@@ -15,13 +16,15 @@ export function getJoke(id: string) {
     return prisma.joke.findUnique({ where: { id } });
 }
 
-export function createJoke(request: { userId: string; name: string, content: string }) {
-    const { userId, name, content } = request;
-    return prisma.joke.create({ data: {
-        name,
-        content,
-        jokesterId: userId,
-    } });
+export function createJoke(request: { user: User; name: string, content: string }) {
+    const { user, name, content } = request;
+    return prisma.joke.create({
+        data: {
+            name,
+            content,
+            jokesterId: user.id,
+        }
+    });
 }
 
 export function deleteJoke(id: string) {

@@ -1,5 +1,18 @@
-import { ActionFunction, json, redirect, useActionData } from 'remix';
-import { requireUserId } from "~/libs/session.server";
+import {
+  ActionFunction,
+  json,
+  Link,
+  LoaderFunction,
+  redirect,
+  useActionData,
+  useCatch,
+} from 'remix';
+import {
+  existUserSession,
+  getUserSession,
+  requireUser,
+  requireUserId,
+} from '~/libs/session.server';
 import { createJoke } from '~/models/joke.server';
 
 function validateJokeContent(content: string) {
@@ -28,8 +41,18 @@ type ActionData = {
 
 const badRequest = (data: ActionData) => json(data, { status: 400 });
 
+export const loader: LoaderFunction = async ({ request, params }) => {
+  const existsUser = await existUserSession(request);
+  if (!existsUser) {
+    throw new Response('Unauthorized', { status: 401 });
+  }
+};
+
 export const action: ActionFunction = async ({ request }) => {
-  const userId = await requireUserId(request);
+  if (request.method === 'GET') {
+    return;
+  }
+  const user = await requireUser(request);
   const form = await request.formData();
   const name = form.get('name')?.toString?.();
   const content = form.get('content')?.toString?.();
@@ -44,7 +67,7 @@ export const action: ActionFunction = async ({ request }) => {
     name: validateJokeName(name),
     content: validateJokeContent(content),
   };
-  const fields = { userId, name, content };
+  const fields = { user, name, content };
   if (Object.values(fieldErrors).some(Boolean)) {
     return badRequest({ fieldErrors, fields });
   }
@@ -113,6 +136,27 @@ export default function NewJokeRoute() {
           </button>
         </div>
       </form>
+    </div>
+  );
+}
+
+export function CatchBoundary() {
+  const caught = useCatch();
+
+  if (caught.status === 401) {
+    return (
+      <div className="error-container">
+        <p>You must be logged in to create a joke.</p>
+        <Link to="/login">Login</Link>
+      </div>
+    );
+  }
+}
+
+export function ErrorBoundary() {
+  return (
+    <div className="error-container">
+      Something unexpected went wrong. Sorry about that.
     </div>
   );
 }
