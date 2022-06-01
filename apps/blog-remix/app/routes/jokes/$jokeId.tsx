@@ -8,12 +8,29 @@ import {
   useParams,
   useTransition,
 } from '@remix-run/react';
-import { ActionFunction, redirect } from 'remix';
+import { ActionFunction, MetaFunction, redirect } from 'remix';
 
 import { deleteJoke, getJoke, Joke } from '~/models/joke.server';
 import { deletePost } from '~/models/post.server';
 
 type LoaderData = { joke: Joke };
+
+export const meta: MetaFunction = ({
+  data,
+}: {
+  data: LoaderData | undefined;
+}) => {
+  if (!data) {
+    return {
+      title: "No joke",
+      description: "No joke found",
+    };
+  }
+  return {
+    title: `"${data.joke.name}" joke`,
+    description: `Enjoy the "${data.joke.name}" joke and much more`,
+  };
+};
 
 export const loader: LoaderFunction = async ({ params }) => {
   const joke = await getJoke(params.jokeId ?? '');

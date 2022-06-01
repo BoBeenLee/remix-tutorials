@@ -1,5 +1,6 @@
 import type { LinksFunction } from '@remix-run/node';
 import { Link } from '@remix-run/react';
+import { MetaFunction } from "remix";
 
 import stylesUrl from '~/styles/index.css';
 
@@ -11,6 +12,13 @@ export const links: LinksFunction = () => {
     },
   ];
 };
+
+export const meta: MetaFunction = () => ({
+  title: "Remix: So great, it's funny!",
+  description:
+    "Remix jokes app. Learn Remix and laugh at the same time!",
+});
+
 
 export default function Index() {
   return (

@@ -1,6 +1,7 @@
 import { ActionFunction, LinksFunction, redirect } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { useActionData, Link, useSearchParams } from '@remix-run/react';
+import { MetaFunction } from "remix";
 import { createUserSession } from '~/libs/session.server';
 
 import { createUser, getUser, userExists } from '~/models/user.server';
@@ -8,6 +9,14 @@ import stylesUrl from '~/styles/login.css';
 
 export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: stylesUrl }];
+};
+
+export const meta: MetaFunction = () => {
+  return {
+    title: "Remix Jokes | Login",
+    description:
+      "Login to submit your own jokes to Remix Jokes!",
+  };
 };
 
 function validateUsername(username: unknown) {
