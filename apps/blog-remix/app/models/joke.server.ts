@@ -11,6 +11,14 @@ export function getJokes() {
     });
 }
 
+export function getJokesForRSS() {
+    return prisma.joke.findMany({
+        take: 100,
+        orderBy: { createdAt: "desc" },
+        include: { jokester: { select: { username: true } } },
+    });
+}
+
 
 export function getJoke(id: string) {
     return prisma.joke.findUnique({ where: { id } });
